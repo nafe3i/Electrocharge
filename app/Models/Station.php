@@ -18,4 +18,8 @@ class Station extends Model
         'photo_url',
         'is_active',
     ];
+     public function connectors()
+    {
+        return $this->hasMany(Connector::class);
+    }
 }
