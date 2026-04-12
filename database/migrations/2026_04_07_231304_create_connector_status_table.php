@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('connector_status', function (Blueprint $table) {
+        Schema::create('connector_statuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('connector_id')
                 ->constrained()
@@ -31,6 +31,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('connector_status');
+        Schema::dropIfExists('connector_statuses');
     }
 };
