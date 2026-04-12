@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use spatie\Permission\Models\Permission;
-use spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -14,8 +14,10 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         //
-        $prmissions = [
+        $permissions = [
             // Utilisateur
             'view-stations',
             'add-favorite',
@@ -36,12 +38,15 @@ class RolesAndPermissionsSeeder extends Seeder
             'view-logs',
             'assign-roles',
         ];
-        foreach ($prmissions as $permission) {
-            Permission::create(['name' => $permission]);
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web'
+            ]);
         }
 
         $userRole = Role::create(['name' => 'user']);
-        $userRole->givePermissionTo([
+        $userRole->syncPermissions([
             'view-stations',
             'add-favorite',
             'delete-favorite',
@@ -52,13 +57,13 @@ class RolesAndPermissionsSeeder extends Seeder
 
 
         $operatorRole = Role::create(['name' => 'operator']);
-        $operatorRole->givePermissionTo([
+        $operatorRole->syncPermissions([
             'view-stations',
             'update-connector-status',
             'view-own-station-stats',
         ]);
 
         $adminRole = Role::create(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->syncPermissions(Permission::all());
     }
 }
