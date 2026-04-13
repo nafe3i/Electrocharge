@@ -18,8 +18,39 @@ class Station extends Model
         'photo_url',
         'is_active',
     ];
-     public function connectors()
+    //station a plusieurs connecteurs
+    public function connectors()
     {
         return $this->hasMany(Connector::class);
+    }
+    // Une station a plusieurs favoris
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    // Une station a plusieurs avis
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    // Une station a plusieurs alertes
+    public function alerts()
+    {
+        return $this->hasMany(Alert::class);
+    }
+
+    // Calcul de la note moyenne dynamiquement
+    public function averageRating(): float
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+
+    // Connecteurs disponibles (status = libre)
+    public function availableConnectors()
+    {
+        return $this->connectors()->whereHas('status', function ($q) {
+            $q->where('status', 'libre');
+        });
     }
 }
