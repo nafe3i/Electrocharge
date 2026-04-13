@@ -37,6 +37,7 @@ class OpenChargeMapService
                     'latitude' => data_get($item, 'AddressInfo.Latitude'),
                     'longitude' => data_get($item, 'AddressInfo.Longitude'),
                     'operator_name' => data_get($item, 'OperatorInfo.Title'),
+                    'photo_url' => data_get($item, 'MediaItems.0.ItemURL'),
                 ]
             );
 
@@ -78,17 +79,22 @@ class OpenChargeMapService
 
     private function mapConnectorType($type)
     {
-        if (str_contains($type, 'CCS')) return 'CCS';
-        if (str_contains($type, 'Type 2')) return 'Type2';
-        if (str_contains($type, 'CHAdeMO')) return 'CHAdeMO';
-        if (str_contains($type, 'Tesla')) return 'Tesla';
+        if (str_contains($type, 'CCS'))
+            return 'CCS';
+        if (str_contains($type, 'Type 2'))
+            return 'Type2';
+        if (str_contains($type, 'CHAdeMO'))
+            return 'CHAdeMO';
+        if (str_contains($type, 'Tesla'))
+            return 'Tesla';
 
-        return 'Type2';
+        return null;
     }
 
     private function mapStatus($status)
     {
-        if ($status === 'Operational') return 'libre';
+        if ($status === 'Operational')
+            return 'libre';
         return 'hors_service';
     }
 }
