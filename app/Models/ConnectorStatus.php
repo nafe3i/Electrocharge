@@ -19,4 +19,9 @@ class ConnectorStatus extends Model
     {
         return $this->belongsTo(Connector::class);
     }
+    // Mis à jour par quel utilisateur
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }
