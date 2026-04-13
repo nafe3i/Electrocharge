@@ -10,7 +10,7 @@ class Connector extends Model
         'station_id',
         'type',
         'power_kw',
-        'price_per_kwh', 
+        'price_per_kwh',
         'quantity',
     ];
 
@@ -22,5 +22,10 @@ class Connector extends Model
     public function status()
     {
         return $this->hasOne(ConnectorStatus::class);
+    }
+    // Historique des prix
+    public function priceHistory()
+    {
+        return $this->hasMany(PriceHistory::class);
     }
 }
