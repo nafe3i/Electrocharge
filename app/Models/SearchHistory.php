@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SearchHistory extends Model
 {
+    protected $table = 'search_history';
     public $timestamps = false;
 
     protected $fillable = [
