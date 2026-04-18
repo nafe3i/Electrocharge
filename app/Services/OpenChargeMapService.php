@@ -40,6 +40,7 @@ class OpenChargeMapService
                     'photo_url' => data_get($item, 'MediaItems.0.ItemURL'),
                 ]
             );
+            // dd($station->latitude);
 
             // Connectors
             foreach (data_get($item, 'Connections', []) as $conn) {
@@ -88,7 +89,7 @@ class OpenChargeMapService
         if (str_contains($type, 'Tesla'))
             return 'Tesla';
 
-        return null;
+        return 'Type2';
     }
 
     private function mapStatus($status)

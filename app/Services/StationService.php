@@ -26,19 +26,25 @@ class StationService
         }
 
         if ($request->filled('type')) {
-            $query->whereHas('connectors', fn($q) =>
+            $query->whereHas(
+                'connectors',
+                fn($q) =>
                 $q->where('type', $request->type)
             );
         }
 
         if ($request->filled('power_min')) {
-            $query->whereHas('connectors', fn($q) =>
+            $query->whereHas(
+                'connectors',
+                fn($q) =>
                 $q->where('power_kw', '>=', $request->power_min)
             );
         }
 
         if ($request->filled('status')) {
-            $query->whereHas('connectors.status', fn($q) =>
+            $query->whereHas(
+                'connectors.status',
+                fn($q) =>
                 $q->where('status', $request->status)
             );
         }
@@ -54,7 +60,9 @@ class StationService
     public function formatForMap(Station $station)
     {
         $statuses = $station->connectors
-            ->map(fn($c) => $c->status?->status ?? 'inconnu');
+            ->map(function ($connector) {
+                return $connector->status?->status ?? 'inconnu';
+            });
 
         $globalStatus = 'libre';
         if ($statuses->contains('hors_service')) {
@@ -64,19 +72,19 @@ class StationService
         }
 
         return [
-            'id'               => $station->id,
-            'name'             => $station->name,
-            'city'             => $station->city,
-            'latitude'         => $station->latitude,
-            'longitude'        => $station->longitude,
-            'operator_name'    => $station->operator_name,
-            'photo_url'        => $station->photo_url,
-            'status'           => $globalStatus,
+            'id' => $station->id,
+            'name' => $station->name,
+            'city' => $station->city,
+            'latitude' => $station->latitude,
+            'longitude' => $station->longitude,
+            'operator_name' => $station->operator_name,
+            'photo_url' => $station->photo_url,
+            'status' => $globalStatus,
             'connectors_count' => $station->connectors->count(),
-            'types'            => $station->connectors->pluck('type')->unique()->values(),
-            'max_power_kw'     => $station->connectors->max('power_kw'),
-            'min_price'        => $station->connectors->whereNotNull('price_per_kwh')->min('price_per_kwh'),
-            'detail_url'       => route('stations.show', $station->id),
+            'types' => $station->connectors->pluck('type')->unique()->values(),
+            'max_power_kw' => $station->connectors->max('power_kw'),
+            'min_price' => $station->connectors->whereNotNull('price_per_kwh')->min('price_per_kwh'),
+            'detail_url' => route('stations.show', $station->id),
         ];
     }
 
@@ -107,8 +115,8 @@ class StationService
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('city', 'like', "%{$search}%")
-                  ->orWhere('operator_name', 'like', "%{$search}%");
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('operator_name', 'like', "%{$search}%");
             });
         }
 
@@ -121,12 +129,12 @@ class StationService
         }
 
         $allowedSorts = ['name', 'city', 'created_at', 'connectors_count', 'reviews_count'];
-        $sort         = in_array($request->sort, $allowedSorts) ? $request->sort : 'created_at';
-        $direction    = $request->direction === 'asc' ? 'asc' : 'desc';
+        $sort = in_array($request->sort, $allowedSorts) ? $request->sort : 'created_at';
+        $direction = $request->direction === 'asc' ? 'asc' : 'desc';
 
         return $query->orderBy($sort, $direction)
-                     ->paginate(15)
-                     ->withQueryString();
+            ->paginate(15)
+            ->withQueryString();
     }
 
     /**
@@ -137,11 +145,11 @@ class StationService
         $station = Station::create($data);
 
         AdminLog::create([
-            'admin_id'    => $adminId,
-            'action'      => 'station.create',
+            'admin_id' => $adminId,
+            'action' => 'station.create',
             'target_type' => 'station',
-            'target_id'   => $station->id,
-            'details'     => ['name' => $station->name, 'city' => $station->city],
+            'target_id' => $station->id,
+            'details' => ['name' => $station->name, 'city' => $station->city],
         ]);
 
         return $station;
@@ -156,13 +164,13 @@ class StationService
         $station->update($data);
 
         AdminLog::create([
-            'admin_id'    => $adminId,
-            'action'      => 'station.update',
+            'admin_id' => $adminId,
+            'action' => 'station.update',
             'target_type' => 'station',
-            'target_id'   => $station->id,
-            'details'     => [
+            'target_id' => $station->id,
+            'details' => [
                 'before' => $before,
-                'after'  => $station->only(['name', 'city', 'address', 'is_active']),
+                'after' => $station->only(['name', 'city', 'address', 'is_active']),
             ],
         ]);
 
@@ -174,18 +182,18 @@ class StationService
      * On ne supprime jamais — des utilisateurs ont peut-être
      * cette station en favoris ou dans leur historique
      */
-    public function deactivateStation(Station $station, int $adminId)
-    {
-        $station->update(['is_active' => false]);
+    // public function deactivateStation(Station $station, int $adminId)
+    // {
+    //     $station->update(['is_active' => false]);
 
-        AdminLog::create([
-            'admin_id'    => $adminId,
-            'action'      => 'station.deactivate',
-            'target_type' => 'station',
-            'target_id'   => $station->id,
-            'details'     => ['name' => $station->name],
-        ]);
-    }
+    //     AdminLog::create([
+    //         'admin_id' => $adminId,
+    //         'action' => 'station.deactivate',
+    //         'target_type' => 'station',
+    //         'target_id' => $station->id,
+    //         'details' => ['name' => $station->name],
+    //     ]);
+    // }
 
     /**
      * Sauvegarder la recherche dans l'historique
@@ -196,10 +204,23 @@ class StationService
         try {
             SearchHistory::create([
                 'user_id' => $userId,
-                'query'   => $query,
+                'query' => $query,
             ]);
         } catch (\Exception $e) {
             \Log::warning('SearchHistory failed: ' . $e->getMessage());
         }
+    }
+    public function toggleStationStatus(Station $station, $idAdmin)
+    {
+        $newState = !$station->is_active;
+        $station->update(['is_active' => $newState]);
+        AdminLog::create([
+            'admin_id' => $idAdmin,
+            'action' => $newState ? 'station.activate' : 'station.deactivate',
+            'target_type' => 'station',
+            'target_id' => $station->id,
+            'details' => ['name' => $station->name],
+        ]);
+        return $station;
     }
 }
