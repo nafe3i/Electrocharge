@@ -27,4 +27,14 @@ class UserController extends Controller
 
         return view('admin.users.index', compact('users', 'roles'));
     }
+    public function updateRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role' => 'required|exists:roles,name'
+        ]);
+
+        $user->syncRoles($request->role);
+
+        return back()->with('success', "Rôle de « {$user->name} » mis à jour.");
+    }
 }
