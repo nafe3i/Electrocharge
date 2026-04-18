@@ -37,4 +37,12 @@ class UserController extends Controller
 
         return back()->with('success', "Rôle de « {$user->name} » mis à jour.");
     }
+    public function destroy(User $user)
+    {
+        abort_if($user->id === auth()->id(), 403, 'Vous ne pouvez pas supprimer votre propre compte.');
+
+        $user->delete();
+
+        return back()->with('success', "Utilisateur « {$user->name} » supprimé.");
+    }
 }
