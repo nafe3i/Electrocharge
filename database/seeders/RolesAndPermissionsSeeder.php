@@ -45,7 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ]);
         }
 
-        $userRole = Role::create(['name' => 'user']);
+        $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
         $userRole->syncPermissions([
             'view-stations',
             'add-favorite',
@@ -56,14 +56,14 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
 
-        $operatorRole = Role::create(['name' => 'operator']);
+        $operatorRole = Role::firstOrCreate(['name' => 'operator', 'guard_name' => 'web']);
         $operatorRole->syncPermissions([
             'view-stations',
             'update-connector-status',
             'view-own-station-stats',
         ]);
 
-        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->syncPermissions(Permission::all());
     }
 }
