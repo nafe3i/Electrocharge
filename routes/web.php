@@ -9,6 +9,9 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\NotificationController;
 
 // Routes publiques
 Route::get('/', fn() => view('welcome'))->name('home');
@@ -31,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
 
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
     Route::get('/alerts', [AlertController::class, 'index'])->name('alerts.index');
     Route::post('/alerts', [AlertController::class, 'store'])->name('alerts.store');
     Route::patch('/alerts/{alert}/toggle', [AlertController::class, 'toggle'])->name('alerts.toggle');
@@ -45,6 +50,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('stations', StationController::class)->except(['show']);
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    // Route::get('')
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 });
 
 
