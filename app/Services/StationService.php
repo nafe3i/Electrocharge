@@ -8,6 +8,7 @@ use App\Models\SearchHistory;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Notification;
 
 class StationService
 {
@@ -221,6 +222,16 @@ class StationService
             'target_id' => $station->id,
             'details' => ['name' => $station->name],
         ]);
-        return $station;
+        // notifier les users qui ont alerte activer 
+        if ($newState) {
+            Notification::create([
+                'title' => 'Station réactivée',
+                'message' => "La station {$station->name} est à nouveau disponible.",
+                'type' => 'info',
+                'target_table' => 'stations',
+                'target_id' => $station->id,
+            ]);
+        }
+        return $station->fresh();
     }
 }
