@@ -16,10 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => RoleMiddleware::class,
-            'permission' =>PermissionMiddleware::class,
-            'role_or_permission' =>RoleOrPermissionMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, \Illuminate\Http\Request $request) {
+            abort(403, 'Accès non autorisé.');
+        });
     })->create();
