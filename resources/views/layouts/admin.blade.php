@@ -39,7 +39,8 @@
             </a>
 
             {{-- Ces routes seront créées plus tard --}}
-            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+            <a href="{{ route('admin.users.index') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
                 <span>👥</span> Utilisateurs
             </a>
 
@@ -48,11 +49,12 @@
                 <span>💬</span> Avis
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+            <a href="" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
                 <span>📈</span> Statistiques
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+            <a href="{{ route('admin.logs.index') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
                 <span>📋</span> Logs
             </a>
         </nav>
@@ -100,7 +102,7 @@
         @if(session('success'))
             <div class="mx-8 mt-4">
                 <div class="bg-green-50 border border-green-200 text-green-800
-                                rounded-lg px-4 py-3 text-sm flex justify-between">
+                                        rounded-lg px-4 py-3 text-sm flex justify-between">
                     {{ session('success') }}
                     <button onclick="this.parentElement.remove()">✕</button>
                 </div>
@@ -110,7 +112,7 @@
         @if(session('error'))
             <div class="mx-8 mt-4">
                 <div class="bg-red-50 border border-red-200 text-red-800
-                                rounded-lg px-4 py-3 text-sm flex justify-between">
+                                        rounded-lg px-4 py-3 text-sm flex justify-between">
                     {{ session('error') }}
                     <button onclick="this.parentElement.remove()">✕</button>
                 </div>

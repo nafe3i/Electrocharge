@@ -31,11 +31,31 @@
 
             @auth
                 {{-- Menu selon le rôle --}}
+                <!-- @role('admin')
+                    <a href="{{ route('admin.stations.index') }}" class="text-gray-600 hover:text-green-600 transition">
+                        Dashboard Admin
+                    </a>
+                    @endrole
+                    @role('user')
+                    <a href="{{ route('favorites.index') }}" class="text-gray-600 hover:text-green-600 transition">❤️
+                        Favoris</a>
+                    <a href="{{ route('alerts.index') }}" class="text-gray-600 hover:text-green-600 transition">🔔 Alertes</a>
+                    <a href="{{ route('history.index') }}" class="text-gray-600 hover:text-green-600 transition">🕐
+                        Historique</a>
+                    @endrole
+
+                    @role('operator')
+                    <a href="{{ route('operator.dashboard') }}" class="text-gray-600 hover:text-green-600 transition">
+                        Mon Dashboard
+                    </a>
+                    @endrole -->
                 @role('admin')
                 <a href="{{ route('admin.stations.index') }}" class="text-gray-600 hover:text-green-600 transition">
                     Dashboard Admin
                 </a>
                 @endrole
+
+                @unlessrole('admin')
                 @role('user')
                 <a href="{{ route('favorites.index') }}" class="text-gray-600 hover:text-green-600 transition">❤️
                     Favoris</a>
@@ -43,6 +63,7 @@
                 <a href="{{ route('history.index') }}" class="text-gray-600 hover:text-green-600 transition">🕐
                     Historique</a>
                 @endrole
+                @endunlessrole
 
                 @role('operator')
                 <a href="{{ route('operator.dashboard') }}" class="text-gray-600 hover:text-green-600 transition">
@@ -50,9 +71,25 @@
                 </a>
                 @endrole
 
+
                 {{-- Nom utilisateur + déconnexion --}}
                 <div class="flex items-center gap-3">
                     <span class="text-gray-500">{{ auth()->user()->name }}</span>
+                    {{-- Compteur notifications --}}
+                    @auth
+                        @php $unread = auth()->user()->unreadNotifications->count(); @endphp
+                        @if($unread > 0)
+                            <a href="{{ route('notifications.index') }}"
+                                class="relative text-gray-600 hover:text-green-600 transition">
+                                🔔
+                                <span class="absolute -top-1 -right-2 bg-red-500 text-white
+                                                 text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                                    {{ $unread }}
+                                </span>
+                            </a>
+                        @endif
+                    @endauth
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-red-500 hover:text-red-700 transition text-sm">
@@ -76,7 +113,7 @@
     @if(session('success'))
         <div class="max-w-7xl mx-auto mt-4 px-6">
             <div class="bg-green-50 border border-green-200 text-green-800
-                            rounded-lg px-4 py-3 text-sm flex justify-between">
+                                    rounded-lg px-4 py-3 text-sm flex justify-between">
                 {{ session('success') }}
                 <button onclick="this.parentElement.remove()" class="text-green-500">✕</button>
             </div>
@@ -86,7 +123,7 @@
     @if(session('error'))
         <div class="max-w-7xl mx-auto mt-4 px-6">
             <div class="bg-red-50 border border-red-200 text-red-800
-                            rounded-lg px-4 py-3 text-sm flex justify-between">
+                                    rounded-lg px-4 py-3 text-sm flex justify-between">
                 {{ session('error') }}
                 <button onclick="this.parentElement.remove()" class="text-red-500">✕</button>
             </div>
