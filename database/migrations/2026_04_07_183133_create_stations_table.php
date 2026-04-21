@@ -14,6 +14,7 @@ return new class extends Migration {
         Schema::create('stations', function (Blueprint $table) {
             $table->id();
 
+            
             // lien avec API OpenChargeMap
             $table->string('ocm_id')->unique();
 
