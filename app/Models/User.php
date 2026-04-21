@@ -56,4 +56,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(AdminLog::class, 'admin_id');
     }
+    public function stations()
+    {
+        return $this->hasMany(Station::class, 'operator_id');
+    }
 }
