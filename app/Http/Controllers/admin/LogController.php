@@ -9,6 +9,7 @@ class LogController extends Controller
 {
     public function index()
     {
+        // $this->authorize('view_logs');
         $logs = AdminLog::with('admin')
             ->latest('created_at')
             ->paginate(20);
