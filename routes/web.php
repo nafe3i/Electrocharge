@@ -12,6 +12,9 @@ use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OperateurController;
+use App\Http\Controllers\ConnectorStatusController;
+
 
 // Routes publiques
 Route::get('/', fn() => view('welcome'))->name('home');
@@ -33,9 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
-
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-
+    Route::delete('/notifications/clear', [NotificationController::class, 'clear'])->name('notifications.clear');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::get('/alerts', [AlertController::class, 'index'])->name('alerts.index');
     Route::post('/alerts', [AlertController::class, 'store'])->name('alerts.store');
     Route::patch('/alerts/{alert}/toggle', [AlertController::class, 'toggle'])->name('alerts.toggle');
@@ -62,7 +65,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // Routes operator
 Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator.')->group(function () {
-    Route::get('/dashboard', fn() => view('operator.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [OperateurController::class, 'dashboard'])->name('dashboard');
+    Route::patch('/connectors/{connector}/status', [ConnectorStatusController::class, 'update'])->name('connectors.status');
+
 });
 
 require __DIR__ . '/auth.php';
