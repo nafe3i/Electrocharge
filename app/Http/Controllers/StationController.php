@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
@@ -106,7 +107,11 @@ class StationController extends Controller
     public function edit(Station $station): View
     {
         $this->authorize('update', $station);
-        return view('stations.edit', compact('station'));
+        // $operators = User::whereHas('roles', function ($query) {
+        //     $query->where('name', 'operateur');
+        // })->get();
+        $operators = User::role('operator')->get();
+        return view('stations.edit', compact('station','operators'));
     }
 
     /**
@@ -126,6 +131,7 @@ class StationController extends Controller
             'opening_hours' => ['nullable', 'string', 'max:500'],
             'photo_url' => ['nullable', 'url', 'max:500'],
             'is_active' => ['sometimes', 'boolean'],
+            'operator_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $station = $this->stationService->updateStation($station, $validated, auth()->id());
