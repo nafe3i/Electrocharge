@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\OperateurController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,9 +40,11 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->hasRole('operator')) {
-            return redirect()->route('operator.dashboard');
+            // $stations = OperateurController::class;
+            // $stations->dashboard();
+            // return redirect()->route('operator.dashboard',compact($stations));
+            return redirect()->route(('operator.dashboard'));
         }
-
         return redirect()->route('dashboard');
     }
 
