@@ -31,4 +31,12 @@ class StationPolicy
     {
         return $user->can('manage-stations');
     }
+    /**
+     * L'opérateur peut voir les stats de sa propre station
+     */
+    public function viewOwn(User $user, Station $station): bool
+    {
+        return $user->hasRole('operator')
+            && $station->operator_user_id === $user->id;
+    }
 }
