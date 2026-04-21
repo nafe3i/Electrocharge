@@ -29,18 +29,18 @@
             <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg
                       {{ request()->routeIs('admin.dashboard') ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">
-                <span>📊</span> Vue d'ensemble
+                Vue d'ensemble
             </a>
 
             <a href="{{ route('admin.stations.index') }}"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg
                       {{ request()->routeIs('admin.stations.*') ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">
-                <span>⚡</span> Stations
+                Stations
             </a>
 
-            {{-- Ces routes seront créées plus tard --}}
+            <!-- {{-- Ces routes seront créées plus tard --}}
             <a href="{{ route('admin.users.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 ">
                 <span>👥</span> Utilisateurs
             </a>
 
@@ -56,7 +56,30 @@
             <a href="{{ route('admin.logs.index') }}"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
                 <span>📋</span> Logs
+            </a> -->
+
+            <a href="{{ route('admin.users.index') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg
+          {{ request()->routeIs('admin.users.*') ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">
+                Utilisateurs
             </a>
+
+            <a href="{{ route('admin.reviews.index') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg
+          {{ request()->routeIs('admin.reviews.*') ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">
+                Avis
+            </a>
+
+            <a href="{{ route('admin.logs.index') }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg
+          {{ request()->routeIs('admin.logs.*') ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-600 hover:bg-gray-50' }}">
+                Logs
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+                Statistiques
+            </a>
+
         </nav>
 
         {{-- Footer sidebar --}}
@@ -102,7 +125,7 @@
         @if(session('success'))
             <div class="mx-8 mt-4">
                 <div class="bg-green-50 border border-green-200 text-green-800
-                                        rounded-lg px-4 py-3 text-sm flex justify-between">
+                                                rounded-lg px-4 py-3 text-sm flex justify-between">
                     {{ session('success') }}
                     <button onclick="this.parentElement.remove()">✕</button>
                 </div>
@@ -112,7 +135,7 @@
         @if(session('error'))
             <div class="mx-8 mt-4">
                 <div class="bg-red-50 border border-red-200 text-red-800
-                                        rounded-lg px-4 py-3 text-sm flex justify-between">
+                                                rounded-lg px-4 py-3 text-sm flex justify-between">
                     {{ session('error') }}
                     <button onclick="this.parentElement.remove()">✕</button>
                 </div>
