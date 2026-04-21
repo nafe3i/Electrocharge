@@ -17,6 +17,7 @@ class Station extends Model
         'opening_hours',
         'photo_url',
         'is_active',
+        'operator_id'
     ];
     //station a plusieurs connecteurs
     public function connectors()
@@ -52,5 +53,11 @@ class Station extends Model
         return $this->connectors()->whereHas('status', function ($q) {
             $q->where('status', 'libre');
         });
+    }
+    //Operators Id for assighining station 
+    public function operator()
+    {
+        return $this->belongsTo(User::class, 'operator_id');
+
     }
 }
