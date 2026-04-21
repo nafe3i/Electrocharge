@@ -2,83 +2,101 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
-use App\Models\Station;
 use App\Models\Connector;
 use App\Models\ConnectorStatus;
+use App\Models\Station;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OpenChargeMapService
 {
-    public function fetchStations()
+    // Injecter OperatorService
+    public function __construct(
+        protected OperatorService $operatorService
+    ) {
+    }
+
+    public function fetchStations(): void
     {
         $response = Http::get('https://api.openchargemap.io/v3/poi', [
             'output' => 'json',
             'countrycode' => 'MA',
             'maxresults' => 50,
-            'key' => env('OPENCHARGE_API_KEY')
+            'key' => env('OPENCHARGE_API_KEY'),
         ]);
 
-        //Vérification API
         if (!$response->successful()) {
-            throw new \Exception('API OpenChargeMap failed');
+            throw new \Exception('API OpenChargeMap failed: ' . $response->status());
         }
 
         $stations = $response->json();
 
         foreach ($stations as $item) {
-
-            //Station
-            $station = Station::updateOrCreate(
-                ['ocm_id' => $item['ID']],
-                [
-                    'name' => data_get($item, 'AddressInfo.Title', 'Unknown'),
-                    'address' => data_get($item, 'AddressInfo.AddressLine1'),
-                    'city' => data_get($item, 'AddressInfo.Town', 'Unknown'),
-                    'latitude' => data_get($item, 'AddressInfo.Latitude'),
-                    'longitude' => data_get($item, 'AddressInfo.Longitude'),
-                    'operator_name' => data_get($item, 'OperatorInfo.Title'),
-                    'photo_url' => data_get($item, 'MediaItems.0.ItemURL'),
-                ]
-            );
-            // dd($station->latitude);
-
-            // Connectors
-            foreach (data_get($item, 'Connections', []) as $conn) {
-
-                $type = $this->mapConnectorType(
-                    data_get($conn, 'ConnectionType.Title', '')
-                );
-
-                $connector = Connector::updateOrCreate(
-                    [
-                        'station_id' => $station->id,
-                        'type' => $type
-                    ],
-                    [
-                        'power_kw' => data_get($conn, 'PowerKW', 0),
-                        'quantity' => data_get($conn, 'Quantity', 1),
-                    ]
-                );
-
-                // Status
-                ConnectorStatus::updateOrCreate(
-                    ['connector_id' => $connector->id],
-                    [
-                        'status' => $this->mapStatus(
-                            data_get($conn, 'StatusType.Title', '')
-                        ),
-                        'updated_by' => null,
-                        'last_updated_at' => now(),
-                    ]
-                );
+            try {
+                $this->processStation($item);
+            } catch (\Exception $e) {
+                Log::error('Station import error ID=' . $item['ID'] . ': ' . $e->getMessage());
+                continue;
             }
         }
 
-        // Log
-        \Log::info('Stations synced: ' . count($stations));
+        Log::info('Stations synced: ' . count($stations));
     }
 
-    private function mapConnectorType($type)
+    protected function processStation(array $item): void
+    {
+        $operatorName = data_get($item, 'OperatorInfo.Title');
+
+        // Créer ou récupérer le compte opérateur
+        // null si pas de nom d'opérateur dans OCM
+        $operatorUser = $operatorName
+            ? $this->operatorService->firstOrCreateFromName($operatorName)
+            : null;
+
+        $station = Station::updateOrCreate(
+            ['ocm_id' => $item['ID']],
+            [
+                'name' => data_get($item, 'AddressInfo.Title', 'Unknown'),
+                'address' => data_get($item, 'AddressInfo.AddressLine1'),
+                'city' => data_get($item, 'AddressInfo.Town', 'Unknown'),
+                'latitude' => data_get($item, 'AddressInfo.Latitude'),
+                'longitude' => data_get($item, 'AddressInfo.Longitude'),
+                'operator_name' => $operatorName,
+                'operator_id' => $operatorUser?->id, // ← lien compte opérateur
+                'photo_url' => data_get($item, 'MediaItems.0.ItemURL'),
+            ]
+        );
+
+        foreach (data_get($item, 'Connections', []) as $conn) {
+            $type = $this->mapConnectorType(
+                data_get($conn, 'ConnectionType.Title', '')
+            );
+
+            if (!$type)
+                continue;
+
+            $connector = Connector::updateOrCreate(
+                ['station_id' => $station->id, 'type' => $type],
+                [
+                    'power_kw' => data_get($conn, 'PowerKW', 0),
+                    'quantity' => data_get($conn, 'Quantity', 1),
+                ]
+            );
+
+            ConnectorStatus::updateOrCreate(
+                ['connector_id' => $connector->id],
+                [
+                    'status' => $this->mapStatus(
+                        data_get($conn, 'StatusType.Title', '')
+                    ),
+                    'updated_by' => null,
+                    'last_updated_at' => now(),
+                ]
+            );
+        }
+    }
+
+    private function mapConnectorType(string $type): ?string
     {
         if (str_contains($type, 'CCS'))
             return 'CCS';
@@ -88,14 +106,11 @@ class OpenChargeMapService
             return 'CHAdeMO';
         if (str_contains($type, 'Tesla'))
             return 'Tesla';
-
-        return 'Type2';
+        return null;
     }
 
-    private function mapStatus($status)
+    private function mapStatus(string $status): string
     {
-        if ($status === 'Operational')
-            return 'libre';
-        return 'hors_service';
+        return $status === 'Operational' ? 'libre' : 'hors_service';
     }
 }
