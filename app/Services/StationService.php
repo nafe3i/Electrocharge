@@ -8,7 +8,7 @@ use App\Models\SearchHistory;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Notification;
+use App\Notifications\StationStatusChanged;
 
 class StationService
 {
@@ -49,6 +49,20 @@ class StationService
                 $q->where('status', $request->status)
             );
         }
+        if ($request->filled('lat') && $request->filled('lng')) {
+            $lat = $request->lat;
+            $lng = $request->lng;
+            $radius = 50; // 50km
+
+            $query->whereRaw("
+        (6371 * acos(
+            cos(radians(?)) * cos(radians(latitude))
+            * cos(radians(longitude) - radians(?))
+            + sin(radians(?)) * sin(radians(latitude))
+        )) < ?
+    ", [$lat, $lng, $lat, $radius]);
+        }
+
 
         return $query->get();
     }
@@ -211,10 +225,11 @@ class StationService
             \Log::warning('SearchHistory failed: ' . $e->getMessage());
         }
     }
-    public function toggleStationStatus(Station $station, $idAdmin)
+    public function toggleStationStatus(Station $station, $idAdmin): Station
     {
         $newState = !$station->is_active;
         $station->update(['is_active' => $newState]);
+
         AdminLog::create([
             'admin_id' => $idAdmin,
             'action' => $newState ? 'station.activate' : 'station.deactivate',
@@ -222,16 +237,19 @@ class StationService
             'target_id' => $station->id,
             'details' => ['name' => $station->name],
         ]);
-        // notifier les users qui ont alerte activer 
+
         if ($newState) {
-            Notification::create([
-                'title' => 'Station réactivée',
-                'message' => "La station {$station->name} est à nouveau disponible.",
-                'type' => 'info',
-                'target_table' => 'stations',
-                'target_id' => $station->id,
-            ]);
+            $station->alerts()
+                ->where('is_active', true)
+                ->where('type', 'disponibilite')
+                ->with('user')
+                ->get()
+                ->each(
+                    fn($alert) =>
+                    $alert->user->notify(new StationStatusChanged($station))
+                );
         }
+
         return $station->fresh();
     }
 }
