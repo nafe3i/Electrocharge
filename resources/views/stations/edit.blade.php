@@ -69,6 +69,22 @@
                            class="w-full border border-gray-200 rounded-lg px-3 py-2.5
                                   text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
+<div class="col-span-2">
+    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+        Assigner à un opérateur
+    </label>
+    <select name="operator_id"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2.5
+                   text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value="">Aucun opérateur</option>
+        @foreach($operators as $op)
+            <option value="{{ $op->id }}"
+                    {{ old('operator_id', $station->operator_id) == $op->id ? 'selected' : '' }}>
+                {{ $op->name }} — {{ $op->email }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
