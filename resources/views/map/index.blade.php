@@ -23,7 +23,7 @@
                 <div>
                     <label class="block text-xs text-gray-500 mb-1">Ville</label>
                     <select id="filter-city" class="w-full border border-gray-200 rounded-lg px-3 py-2
-                                       text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                           text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Toutes les villes ({{ $cities->count() }})</option>
                         @foreach($cities as $city)
                             <option value="{{ $city }}">{{ $city }}</option>
@@ -35,7 +35,7 @@
                 <div>
                     <label class="block text-xs text-gray-500 mb-1">Type de connecteur</label>
                     <select id="filter-type" class="w-full border border-gray-200 rounded-lg px-3 py-2
-                                       text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                           text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Tous</option>
                         <option value="CCS">CCS</option>
                         <option value="Type2">Type 2</option>
@@ -48,7 +48,7 @@
                 <div>
                     <label class="block text-xs text-gray-500 mb-1">Disponibilité</label>
                     <select id="filter-status" class="w-full border border-gray-200 rounded-lg px-3 py-2
-                                       text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                           text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Tous</option>
                         <option value="libre">🟢 Libre</option>
                         <option value="occupee">🟠 Occupée</option>
@@ -59,11 +59,11 @@
                 {{-- Boutons --}}
                 <div class="flex gap-2 pt-1">
                     <button onclick="applyFilters()" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm
-                                       hover:bg-green-700 transition font-medium">
+                                           hover:bg-green-700 transition font-medium">
                         Appliquer
                     </button>
                     <button onclick="resetFilters()" class="border border-gray-200 text-gray-600 px-3 py-2
-                                       rounded-lg text-sm hover:bg-gray-50 transition">
+                                           rounded-lg text-sm hover:bg-gray-50 transition">
                         Reset
                     </button>
                 </div>
@@ -94,7 +94,7 @@
 
             {{-- Bouton géolocalisation --}}
             <button onclick="locateUser()" class="w-full border border-green-200 text-green-700 bg-green-50
-                               py-2.5 rounded-xl text-sm font-medium hover:bg-green-100 transition">
+                                   py-2.5 rounded-xl text-sm font-medium hover:bg-green-100 transition">
                 📍 Autour de moi
             </button>
         </div>
@@ -105,10 +105,10 @@
 
             {{-- Loader overlay --}}
             <div id="map-loader" class="absolute inset-0 bg-white bg-opacity-80 flex items-center
-                            justify-center rounded-xl z-10">
+                                justify-center rounded-xl z-10">
                 <div class="text-center">
                     <div class="w-8 h-8 border-2 border-green-600 border-t-transparent
-                                    rounded-full animate-spin mx-auto mb-3"></div>
+                                        rounded-full animate-spin mx-auto mb-3"></div>
                     <p class="text-sm text-gray-500">Chargement des stations...</p>
                 </div>
             </div>
@@ -253,21 +253,21 @@
                         );
 
                         marker.bindPopup(`
-                                <div class="station-popup">
-                                    <h3>${station.name}</h3>
-                                    <div class="sub">${station.city ?? ''} · ${station.operator_name ?? 'Opérateur inconnu'}</div>
-                                    <div class="info-row">
-                                        <span class="status-badge status-${station.status}">${label}</span>
+                                    <div class="station-popup">
+                                        <h3>${station.name}</h3>
+                                        <div class="sub">${station.city ?? ''} · ${station.operator_name ?? 'Opérateur inconnu'}</div>
+                                        <div class="info-row">
+                                            <span class="status-badge status-${station.status}">${label}</span>
+                                        </div>
+                                        <div class="info-row">🔌 ${types}</div>
+                                        <div class="info-row">⚡ Puissance max : ${power}</div>
+                                        <div class="info-row">💰 Prix : ${price}</div>
+                                        <div class="info-row">${rating}</div>
+                                        <a href="/stations/${station.id}" class="detail-link">
+                                            Voir le détail →
+                                        </a>
                                     </div>
-                                    <div class="info-row">🔌 ${types}</div>
-                                    <div class="info-row">⚡ Puissance max : ${power}</div>
-                                    <div class="info-row">💰 Prix : ${price}</div>
-                                    <div class="info-row">${rating}</div>
-                                    <a href="/stations/${station.id}" class="detail-link">
-                                        Voir le détail →
-                                    </a>
-                                </div>
-                            `, { maxWidth: 260 });
+                                `, { maxWidth: 260 });
 
                         markersLayer.addLayer(marker);
                     });
@@ -310,7 +310,8 @@
                     radius: 8, fillColor: '#3b82f6',
                     color: '#fff', weight: 2, fillOpacity: 1
                 }).addTo(map).bindPopup('Vous êtes ici').openPopup();
-            });
+                loadStations({ lat: latitude, lng: longitude });
+            }, () => { alert('Impossible de vous localiser.') });
         }
 
         loadStations();
