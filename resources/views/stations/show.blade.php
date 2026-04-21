@@ -22,7 +22,7 @@
                         <img src="{{ $station->photo_url }}" alt="{{ $station->name }}" class="w-full h-48 object-cover">
                     @else
                         <div class="w-full h-48 bg-gradient-to-br from-green-50 to-green-100
-                                                                flex items-center justify-center">
+                                                                        flex items-center justify-center">
                             <span class="text-6xl">⚡</span>
                         </div>
                     @endif
@@ -61,7 +61,7 @@
 
                         @if($station->opening_hours)
                             <div class="mt-3 text-sm text-gray-600 bg-gray-50
-                                                                    rounded-lg px-3 py-2">
+                                                                            rounded-lg px-3 py-2">
                                 🕐 {{ $station->opening_hours }}
                             </div>
                         @endif
@@ -91,10 +91,11 @@
                             ];
                         @endphp
                         <div class="flex items-center justify-between py-3
-                                                                border-b border-gray-100 last:border-0">
+                                                                        border-b border-gray-100 last:border-0">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center
-                                                                        justify-center text-lg font-bold text-gray-600">
+                                <div
+                                    class="w-10 h-10 bg-gray-100 rounded-lg flex items-center
+                                                                                justify-center text-lg font-bold text-gray-600">
                                     {{ substr($connector->type, 0, 1) }}
                                 </div>
                                 <div>
@@ -113,7 +114,7 @@
                             <div class="flex items-center gap-3">
                                 <span
                                     class="text-xs px-2.5 py-1 rounded-full border font-medium
-                                                                         {{ $statusColor[$status] ?? $statusColor['inconnu'] }}">
+                                                                                 {{ $statusColor[$status] ?? $statusColor['inconnu'] }}">
                                     {{ $statusLabel[$status] ?? 'Inconnu' }}
                                 </span>
                                 @if($connector->status)
@@ -147,15 +148,15 @@
                     {{-- Formulaire avis --}}
                     @auth
                         <div id="review-form" class="hidden mb-6 bg-gray-50 rounded-xl p-4">
-                            <form method="POST" action="{{ route("reviews.store",$station) }}">
+                            <form method="POST" action="{{ route("reviews.store", $station) }}">
                                 @csrf
                                 <input type="hidden" name="station_id" value="{{ $station->id }}">
 
                                 <div class="mb-3">
                                     <label class="block text-xs text-gray-500 mb-1">Note</label>
                                     <select name="rating" class="border border-gray-200 rounded-lg px-3 py-2
-                                                                               text-sm focus:outline-none focus:ring-2
-                                                                               focus:ring-green-500">
+                                                                                       text-sm focus:outline-none focus:ring-2
+                                                                                       focus:ring-green-500">
                                         <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
                                         <option value="4">⭐⭐⭐⭐ Bien</option>
                                         <option value="3">⭐⭐⭐ Moyen</option>
@@ -170,13 +171,13 @@
                                     </label>
                                     <textarea name="comment" rows="3" placeholder="Partagez votre expérience..."
                                         class="w-full border border-gray-200 rounded-lg
-                                                                                 px-3 py-2 text-sm focus:outline-none
-                                                                                 focus:ring-2 focus:ring-green-500 resize-none">
-                                                                </textarea>
+                                                                                         px-3 py-2 text-sm focus:outline-none
+                                                                                         focus:ring-2 focus:ring-green-500 resize-none">
+                                                                        </textarea>
                                 </div>
 
                                 <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg
-                                                                           text-sm hover:bg-green-700 transition">
+                                                                                   text-sm hover:bg-green-700 transition">
                                     Publier l'avis
                                 </button>
                             </form>
@@ -188,8 +189,9 @@
                         <div class="py-3 border-b border-gray-100 last:border-0">
                             <div class="flex items-center justify-between mb-1">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 rounded-full bg-green-100 flex items-center
-                                                                            justify-center text-green-700 text-xs font-medium">
+                                    <div
+                                        class="w-7 h-7 rounded-full bg-green-100 flex items-center
+                                                                                    justify-center text-green-700 text-xs font-medium">
                                         {{ strtoupper(substr($review->user->name, 0, 1)) }}
                                     </div>
                                     <span class="text-sm font-medium text-gray-700">
@@ -233,9 +235,9 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="w-full py-2.5 rounded-lg text-sm font-medium
-                                                   bg-red-50 text-red-600 border border-red-200
-                                                   hover:bg-red-100 transition flex items-center
-                                                   justify-center gap-2">
+                                                               bg-red-50 text-red-600 border border-red-200
+                                                               hover:bg-red-100 transition flex items-center
+                                                               justify-center gap-2">
                                     ❤️ Retirer des favoris
                                 </button>
                             </form>
@@ -244,24 +246,36 @@
                             <form method="POST" action="{{ route('favorites.store', $station) }}">
                                 @csrf
                                 <button type="submit" class="w-full py-2.5 rounded-lg text-sm font-medium
-                                                   bg-green-50 text-green-700 border border-green-200
-                                                   hover:bg-green-100 transition flex items-center
-                                                   justify-center gap-2">
+                                                               bg-green-50 text-green-700 border border-green-200
+                                                               hover:bg-green-100 transition flex items-center
+                                                               justify-center gap-2">
                                     🤍 Ajouter aux favoris
+                                </button>
+                            </form>
+                        @endif
+                        @if(auth()->user()->can('manage-alerts'))
+                            <form method="POST" action="{{ route('alerts.store') }}">
+                                @csrf
+                                <input type="hidden" name="station_id" value="{{ $station->id }}">
+                                <input type="hidden" name="type" value="disponibilite">
+                                <button type="submit" class="w-full py-2.5 rounded-lg text-sm font-medium
+                                       bg-yellow-50 text-yellow-700 border border-yellow-200
+                                       hover:bg-yellow-100 transition flex items-center justify-center gap-2">
+                                    🔔 Recevoir une alerte
                                 </button>
                             </form>
                         @endif
                     @else
                         <a href="{{ route('login') }}" class="w-full py-2.5 rounded-lg text-sm font-medium border
-                                  border-gray-200 text-gray-600 hover:bg-gray-50 transition
-                                  flex items-center justify-center gap-2">
+                                          border-gray-200 text-gray-600 hover:bg-gray-50 transition
+                                          flex items-center justify-center gap-2">
                             🔒 Connectez-vous pour les favoris
                         </a>
                     @endauth
                     {{-- Retour carte --}}
                     <a href="{{ route('map') }}" class="w-full py-2.5 rounded-lg text-sm font-medium border
-                                          border-gray-200 text-gray-600 hover:bg-gray-50 transition
-                                          flex items-center justify-center gap-2">
+                                              border-gray-200 text-gray-600 hover:bg-gray-50 transition
+                                              flex items-center justify-center gap-2">
                         ← Retour à la carte
                     </a>
                 </div>
