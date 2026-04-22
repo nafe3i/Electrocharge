@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElectroCharge Maroc — Stations de recharge VE</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-white text-gray-900">
 
     {{-- Navbar --}}
@@ -14,16 +16,21 @@
         <div class="flex items-center gap-4 text-sm">
             <a href="{{ route('map') }}" class="text-gray-600 hover:text-green-600">Carte</a>
             @auth
-                <a href="{{ route('home') }}"
-                   class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                    Mon espace
-                </a>
+                @role('admin')
+                <a href="{{ route('admin.dashboard') }}" ...>Dashboard Admin</a>
+                @endrole
+                @role('operator')
+                <a href="{{ route('operator.dashboard') }}" ...>Mon Dashboard</a>
+                @endrole
+                @role('user')
+                <a href="{{ route('dashboard') }}" ...>Mon espace</a>
+                @endrole
             @else
                 <a href="{{ route('login') }}" class="text-gray-600 hover:text-green-600">
                     Connexion
                 </a>
                 <a href="{{ route('register') }}"
-                   class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                     S'inscrire
                 </a>
             @endauth
@@ -46,16 +53,21 @@
             et planifiez vos trajets sereinement.
         </p>
         <div class="flex items-center justify-center gap-4 flex-wrap">
-            <a href="{{ route('map') }}"
-               class="bg-green-600 text-white px-8 py-3.5 rounded-xl text-base
+            <a href="{{ route('map') }}" class="bg-green-600 text-white px-8 py-3.5 rounded-xl text-base
                       font-medium hover:bg-green-700 transition">
                 Explorer la carte
             </a>
-            <a href="{{ route('register') }}"
-               class="border border-gray-200 text-gray-700 px-8 py-3.5 rounded-xl
-                      text-base font-medium hover:bg-gray-50 transition">
-                Créer un compte
-            </a>
+            @guest
+                <a href="{{ route('register') }}" class="border border-gray-200 text-gray-700 px-8 py-3.5 rounded-xl
+                          text-base font-medium hover:bg-gray-50 transition">
+                    Créer un compte
+                </a>
+            @else
+                <a href="{{ route('dashboard') }}" class="border border-gray-200 text-gray-700 px-8 py-3.5 rounded-xl
+                          text-base font-medium hover:bg-gray-50 transition">
+                    Mon espace
+                </a>
+            @endguest
         </div>
     </section>
 
@@ -164,11 +176,17 @@
             <p class="text-green-100 mb-8">
                 Rejoignez la communauté ElectroCharge et simplifiez vos trajets.
             </p>
-            <a href="{{ route('register') }}"
-               class="bg-white text-green-700 px-8 py-3.5 rounded-xl font-medium
+            @guest
+                <a href="{{ route('register') }}" class="bg-white text-green-700 px-8 py-3.5 rounded-xl font-medium
                       hover:bg-green-50 transition inline-block">
-                Créer mon compte gratuitement
-            </a>
+                    Créer mon compte gratuitement
+                </a>
+            @else
+                <a href="{{ route('map') }}" class="bg-white text-green-700 px-8 py-3.5 rounded-xl font-medium
+                      hover:bg-green-50 transition inline-block">
+                    Explorer la carte
+                </a>
+            @endguest
         </div>
     </section>
 
@@ -178,4 +196,5 @@
     </footer>
 
 </body>
+
 </html>
