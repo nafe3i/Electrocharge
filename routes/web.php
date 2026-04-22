@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OperateurController;
 use App\Http\Controllers\ConnectorStatusController;
+use App\Http\Controllers\StatsController;
 
 
 // Routes publiques
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/stats', [StatsController::class, 'index'])->name('stats.index');
+
+
 
 });
 
