@@ -37,6 +37,6 @@ class StationPolicy
     public function viewOwn(User $user, Station $station): bool
     {
         return $user->hasRole('operator')
-            && $station->operator_user_id === $user->id;
+            && $station->operator_id === $user->id;
     }
 }
