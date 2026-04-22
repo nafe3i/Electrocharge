@@ -76,7 +76,7 @@
                 Logs
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
+            <a href="{{ route('admin.stats.index')  }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 cursor-not-allowed">
                 Statistiques
             </a>
 
