@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('connector_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->enum('status', ['libre', 'occupée', 'hors_service']);
+            $table->enum('status', ['libre', 'occupee', 'hors_service']);
             $table->foreignId('updated_by')
                 ->nullable()
                 ->constrained('users')
