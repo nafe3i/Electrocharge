@@ -34,7 +34,7 @@ class FavoriteController extends Controller
     {
         $favorite = auth()->user()->favorites()->where('station_id', $station->id)->first()->delete();
         // $favorite->delete();
-
+// dd($favorite)
         return back()->with('info', "« {$station->name} » supprimé des favoris.");
 
     }
