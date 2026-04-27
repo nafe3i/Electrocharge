@@ -30,4 +30,5 @@ return new class extends Migration {
             $table->dropColumn('operator_id');
         });
     }
+    
 };
