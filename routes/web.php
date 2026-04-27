@@ -15,17 +15,31 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OperateurController;
 use App\Http\Controllers\ConnectorStatusController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\DashboardController;
 
 
 // Routes publiques
-Route::get('/', fn() => view('welcome'))->name('home');
+// Dans routes/web.php, remplace la route home par :
+Route::get('/', function () {
+    return view('welcome', [
+        'stationsCount' => \App\Models\Station::where('is_active', true)->count(),
+        'citiesCount' => \App\Models\Station::where('is_active', true)->distinct('city')->count('city'),
+        'connectorsCount' => \App\Models\Connector::distinct('type')->count('type'),
+    ]);
+})->name('home');
 Route::get('/map', [MapController::class, 'index'])->name('map');
 Route::get('/api/stations', [ApiStationController::class, 'index'])->name('api.stations');
 Route::get('/stations/{station}', [StationController::class, 'show'])->name('stations.show');
 
 // Routes utilisateurs connectés
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', function () {
+        return view('dashboard', [
+            'favoritesCount' => auth()->user()->favorites()->count(),
+            'alertsCount' => auth()->user()->alerts()->where('is_active', true)->count(),
+            'historyCount' => auth()->user()->searchHistory()->count(),
+        ]);
+    })->name('dashboard');
     Route::get('/favorites', [FavoriteController::class, 'index'])
         ->name('favorites.index');
     Route::post('/favorites/{station}', [FavoriteController::class, 'store'])
@@ -50,7 +64,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Routes admin — un seul groupe
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+    // Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('stations', StationController::class)->except(['show']);
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
