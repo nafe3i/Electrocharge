@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Station;
-use App\Models\AdminLog;
 use App\Services\StationService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -21,6 +19,7 @@ class StationController extends Controller
         protected StationService $stationService
     ) {
     }
+
 
     /**
      * GET /stations/{station}
@@ -111,7 +110,7 @@ class StationController extends Controller
         //     $query->where('name', 'operateur');
         // })->get();
         $operators = User::role('operator')->get();
-        return view('stations.edit', compact('station','operators'));
+        return view('stations.edit', compact('station', 'operators'));
     }
 
     /**
