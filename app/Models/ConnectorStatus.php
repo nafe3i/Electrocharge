@@ -12,8 +12,11 @@ class ConnectorStatus extends Model
         'updated_by',
         'last_updated_at',
     ];
+    protected $casts = [
+        'last_updated_at' => 'datetime',
+    ];
 
-    public $timestamps = false; // car on utilise last_updated_at
+    public $timestamps = false;
 
     public function connector()
     {
