@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )->withSchedule(function (Schedule $schedule) {
         $schedule->command('stations:sync')->dailyAt('00:00');
         $schedule->command('connector:simulate')->everyFifteenMinutes();
+        // $schedule->call(function () {
+        //     \Log::info('CRON TEST OK');
+        // })->everyMinute();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
