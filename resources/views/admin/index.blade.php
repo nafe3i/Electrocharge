@@ -4,36 +4,34 @@
 
 @section('content')
 
-    {{-- Header de la page --}}
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h2 class="text-xl font-medium text-gray-800">Stations de recharge</h2>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ $stations->total() }} station(s) au total
-            </p>
+            <h2 class="text-base font-semibold text-slate-800">Stations de recharge</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ $stations->total() }} station(s) au total</p>
         </div>
-        <a href="{{ route('admin.stations.create') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm
-                  hover:bg-green-700 transition flex items-center gap-2">
-            + Ajouter une station
+        <a href="{{ route('admin.stations.create') }}" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2
+                  rounded-lg text-sm font-medium hover:bg-green-700 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Ajouter une station
         </a>
     </div>
 
     {{-- Filtres --}}
-    <form method="GET" action="{{ route('admin.stations.index') }}" class="bg-white border border-gray-200 rounded-xl p-4 mb-6
-                 flex flex-wrap gap-3 items-end">
+    <form method="GET" action="{{ route('admin.stations.index') }}"
+        class="bg-white border border-slate-200 rounded-xl p-4 mb-5 flex flex-wrap gap-3 items-end">
 
-        {{-- Recherche --}}
         <div class="flex-1 min-w-48">
-            <label class="block text-xs text-gray-500 mb-1">Recherche</label>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Nom, ville, opérateur..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                          focus:outline-none focus:ring-2 focus:ring-green-500">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Recherche</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Nom, ville, opérateur..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm
+                          focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
         </div>
 
-        {{-- Filtre ville --}}
         <div class="min-w-36">
-            <label class="block text-xs text-gray-500 mb-1">Ville</label>
-            <select name="city" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                           focus:outline-none focus:ring-2 focus:ring-green-500">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Ville</label>
+            <select name="city" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white
+                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">Toutes</option>
                 @foreach($cities as $city)
                     <option value="{{ $city }}" {{ request('city') === $city ? 'selected' : '' }}>
@@ -43,142 +41,111 @@
             </select>
         </div>
 
-        {{-- Filtre statut --}}
         <div class="min-w-36">
-            <label class="block text-xs text-gray-500 mb-1">Statut</label>
-            <select name="active" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                           focus:outline-none focus:ring-2 focus:ring-green-500">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Statut</label>
+            <select name="active" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white
+                           focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">Tous</option>
-                <option value="1" {{ request('active') === '1' ? 'selected' : '' }}>
-                    Active
-                </option>
-                <option value="0" {{ request('active') === '0' ? 'selected' : '' }}>
-                    Inactive
-                </option>
+                <option value="1" {{ request('active') === '1' ? 'selected' : '' }}>Active</option>
+                <option value="0" {{ request('active') === '0' ? 'selected' : '' }}>Inactive</option>
             </select>
         </div>
 
-        {{-- Boutons --}}
         <div class="flex gap-2">
             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm
-                           hover:bg-green-700 transition">
+                           font-medium hover:bg-green-700 transition">
                 Filtrer
             </button>
-            <a href="{{ route('admin.stations.index') }}" class="border border-gray-200 text-gray-600 px-4 py-2 rounded-lg
-                      text-sm hover:bg-gray-50 transition">
-                Reset
+            <a href="{{ route('admin.stations.index') }}" class="border border-slate-200 text-slate-600 px-4 py-2 rounded-lg
+                      text-sm hover:bg-slate-50 transition">
+                Réinitialiser
             </a>
         </div>
     </form>
 
     {{-- Tableau --}}
-    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-slate-50 border-b border-slate-200">
                 <tr>
-                    <th class="text-left px-4 py-3 text-gray-500 font-medium">
+                    <th class="text-left px-4 py-3 text-slate-500 font-medium">
                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'name', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc']) }}"
-                            class="hover:text-gray-800 flex items-center gap-1">
+                            class="hover:text-slate-800 flex items-center gap-1">
                             Nom
                             @if(request('sort') === 'name')
-                                {{ request('direction') === 'asc' ? '↑' : '↓' }}
+                                <span class="text-xs">{{ request('direction') === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </a>
                     </th>
-                    <th class="text-left px-4 py-3 text-gray-500 font-medium">
+                    <th class="text-left px-4 py-3 text-slate-500 font-medium">
                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'city', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc']) }}"
-                            class="hover:text-gray-800">
+                            class="hover:text-slate-800">
                             Ville
                         </a>
                     </th>
-                    <th class="text-left px-4 py-3 text-gray-500 font-medium">Opérateur</th>
-                    <th class="text-center px-4 py-3 text-gray-500 font-medium">Connecteurs</th>
-                    <th class="text-center px-4 py-3 text-gray-500 font-medium">Avis</th>
-                    <th class="text-center px-4 py-3 text-gray-500 font-medium">Favoris</th>
-                    <th class="text-center px-4 py-3 text-gray-500 font-medium">Statut</th>
-                    <th class="text-right px-4 py-3 text-gray-500 font-medium">Actions</th>
+                    <th class="text-left px-4 py-3 text-slate-500 font-medium">Opérateur</th>
+                    <th class="text-center px-4 py-3 text-slate-500 font-medium">Connecteurs</th>
+                    <th class="text-center px-4 py-3 text-slate-500 font-medium">Avis</th>
+                    <th class="text-center px-4 py-3 text-slate-500 font-medium">Favoris</th>
+                    <th class="text-center px-4 py-3 text-slate-500 font-medium">Statut</th>
+                    <th class="text-right px-4 py-3 text-slate-500 font-medium">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody class="divide-y divide-slate-100">
                 @forelse($stations as $station)
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="hover:bg-slate-50 transition">
 
-                        {{-- Nom --}}
                         <td class="px-4 py-3">
-                            <div class="font-medium text-gray-800">{{ $station->name }}</div>
+                            <div class="font-medium text-slate-800">{{ $station->name }}</div>
                             @if($station->ocm_id)
-                                <div class="text-xs text-gray-400">OCM #{{ $station->ocm_id }}</div>
+                                <div class="text-xs text-slate-400">OCM #{{ $station->ocm_id }}</div>
                             @endif
                         </td>
 
-                        {{-- Ville --}}
-                        <td class="px-4 py-3 text-gray-600">
-                            {{ $station->city ?? '—' }}
-                        </td>
+                        <td class="px-4 py-3 text-slate-600">{{ $station->city ?? '—' }}</td>
 
-                        {{-- Opérateur --}}
-                        <td class="px-4 py-3 text-gray-600">
-                            {{ $station->operator_name ?? '—' }}
-                        </td>
+                        <td class="px-4 py-3 text-slate-600">{{ $station->operator_name ?? '—' }}</td>
 
-                        {{-- Connecteurs --}}
                         <td class="px-4 py-3 text-center">
                             <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
                                 {{ $station->connectors_count }}
                             </span>
                         </td>
 
-                        {{-- Avis --}}
                         <td class="px-4 py-3 text-center">
-                            <span class="bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                            <span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium">
                                 {{ $station->reviews_count }}
                             </span>
                         </td>
 
-                        {{-- Favoris --}}
                         <td class="px-4 py-3 text-center">
-                            <span class="bg-pink-50 text-pink-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                            <span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full text-xs font-medium">
                                 {{ $station->favorites_count }}
                             </span>
                         </td>
 
-                        {{-- Statut actif/inactif --}}
                         <td class="px-4 py-3 text-center">
-                            @if($station->is_active)
-                                <span class="bg-green-50 text-green-700 px-2 py-0.5
-                                                     rounded-full text-xs font-medium">
-                                    Active
-                                </span>
-                            @else
-                                <span class="bg-red-50 text-red-700 px-2 py-0.5
-                                                     rounded-full text-xs font-medium">
-                                    Inactive
-                                </span>
-                            @endif
+                            <span
+                                class="text-xs px-2 py-0.5 rounded-full font-medium
+                                             {{ $station->is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">
+                                {{ $station->is_active ? 'Active' : 'Inactive' }}
+                            </span>
                         </td>
 
-                        {{-- Actions --}}
                         <td class="px-4 py-3">
-                            <div class="flex items-center justify-end gap-2">
-
-                                {{-- Voir --}}
-                                <a href="{{ route('stations.show', $station) }}"
-                                    class="text-gray-400 hover:text-blue-600 transition text-xs" target="_blank">
+                            <div class="flex items-center justify-end gap-3">
+                                <a href="{{ route('stations.show', $station) }}" target="_blank"
+                                    class="text-xs text-slate-400 hover:text-blue-600 transition">
                                     Voir
                                 </a>
-
-                                {{-- Modifier --}}
                                 <a href="{{ route('admin.stations.edit', $station) }}"
-                                    class="text-gray-400 hover:text-green-600 transition text-xs">
+                                    class="text-xs text-slate-400 hover:text-green-600 transition">
                                     Modifier
                                 </a>
-
-                                {{-- Désactiver / Activer --}}
-                                <form method="POST" action="{{ route('admin.stations.destroy', $station) }}"
-                                    onsubmit="return confirm('Confirmer cette action ?')">
+                                <form method="POST" action="{{ route('admin.stations.destroy', $station) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-gray-400 hover:text-red-600 transition text-xs">
+                                    <button type="submit" class="text-xs text-slate-400 hover:text-red-600 transition">
                                         {{ $station->is_active ? 'Désactiver' : 'Activer' }}
                                     </button>
                                 </form>
@@ -187,7 +154,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-12 text-center text-gray-400">
+                        <td colspan="8" class="px-4 py-12 text-center text-slate-400">
                             Aucune station trouvée.
                             <a href="{{ route('admin.stations.create') }}" class="text-green-600 hover:underline ml-1">
                                 Ajouter la première station
@@ -198,9 +165,8 @@
             </tbody>
         </table>
 
-        {{-- Pagination --}}
         @if($stations->hasPages())
-            <div class="px-4 py-3 border-t border-gray-100">
+            <div class="px-4 py-3 border-t border-slate-100">
                 {{ $stations->links() }}
             </div>
         @endif
